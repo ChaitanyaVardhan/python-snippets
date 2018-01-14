@@ -9,11 +9,11 @@ class Open_file():
         self.mode = mode
 
     def __enter__(self):
-        f = open(self.filename, self.mode)
-        return f
+        self.f = open(self.filename, self.mode)
+        return self.f
 
     def __exit__(self, exc_type, exc, exc_tb):
-        f.close()
+        self.f.close()
 
 @contextmanager
 def open_file_fn(filename, mode):
@@ -30,20 +30,24 @@ def change_dir_fn(dirname):
     finally:
         os.chdir(cwd)
 
-with Open_file('file1.txt', 'w') as f:
-    f.write("This line was written using Open_file class context manager")
-#This writes a line in file1.txt
+def main():
+    #This writes a line in file1.txt
+    with Open_file('file1.txt', 'w') as f:
+        f.write("This line was written using Open_file class context manager")
+    print(f.closed)
+        #This will print "True"
 
-print(f.closed)
-#This will print "True"
+    with open_file_fn('file2.txt', 'w') as f2:
+        f2.write("This line was sritten using open_file_fn function based context manager")
+    
+    print(f2.closed)
 
-with open_file_fn('file2.txt', 'w') as f2:
-    f2.write("This line was sritten using open_file_fn function based context manager")
+    with change_dir_fn('/home/ubuntu/dotfiles'):
+        print(os.listdir(os.getcwd()))
 
-print(f2.closed)
+    print(os.getcwd())
 
-with change_dir_fn('/home/ubuntu/dotfiles'):
-    print(os.listdir(os.getcwd()))
+if __name__ == '__main__':
+    main()
 
-print(os.getcwd())
 
