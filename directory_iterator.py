@@ -23,6 +23,37 @@ def count_files_in_directory(dirpath, white_list_formats):
                 count += 1
     return count
 
+def list_valid_subdirs(directory):
+    """ returns a list of valid subdirs in a dir"""
+    subdirs = []
+    for subdir in os.listdir(directory):
+        if os.path.isdir(os.path.join(directory, subdir)):
+            subdirs.append(subdir)
+
+    return subdirs
+
+def list_valid_filenames_in_directory(directory, white_list_formats,
+                                      class_indices, follow_links):
+    """List path of files in subdir with extensions in white_list_formats"""
+    def _recursive_list(subpath):
+        return sorted(os.walk(subpath, followlinks=follow_links))
+
+    classes = []
+    filenames = []
+    subdir = os.path.basename(directory)
+    basedir = os.path.dirname(directory)
+    for root, _, files in _recursive_list(directory):
+        for fname in sorted(files):
+            is_valid = False
+            for extension in white_list_formats:
+                if fname.lower().endswith('.' + extension):
+                    is_valid = True
+            if is_valid:
+                classes.append(class_indices[subdir])
+                absolute_path = os.path.join(root, fname)
+                filenames.append(os.path.relpath(absolute_path, basedir))
+    return classes, filenames
+
 class CountFiles(object):
     def __init__(self, directory):
         self.directory  = directory
@@ -40,6 +71,37 @@ class CountFiles(object):
                                                              for subdir in self.valid_subdirs)))
 
         print 'Found {} files in {} subdirectories '.format(self.count, len(self.valid_subdirs))
+
+class BuildFileIndex():
+    """" builds an index of files present in a directory """
+    def __init__(self, directory):
+        self.directory = directory
+        self.follow_links = False
+        cf = CountFiles(self.directory)
+        cf.count_files()
+        self.samples = cf.count
+        classes = list_valid_subdirs(self.directory)
+        self.class_indices = dict(zip(classes, range(len(classes))))
+
+    def build_file_index(self):
+        self.valid_subdirs = list_valid_subdirs(self.directory)
+        pool = multiprocessing.pool.ThreadPool()
+        results = []
+        self.filenames = []
+        self.classes = []
+        white_list_formats = ['jpeg', 'jpg', 'png']
+        i = 0
+        for dirpath in (os.path.join(self.directory, subdir) for subdir in self.valid_subdirs):
+            results.append(pool.apply_async(list_valid_filenames_in_directory,
+                                            (dirpath, white_list_formats,
+                                             self.class_indices, self.follow_links)))
+        for res in results:
+            classes, filenames = res.get()
+            self.classes[i:i + len(classes)] = classes
+            self.filenames += filenames
+            i += len(classes)
+        pool.close()
+        pool.join()
 
 if __name__ == '__main__':
     print count_files_in_directory('/home/ubuntu/dogscats',['jpg', 'jpeg', 'png'])
