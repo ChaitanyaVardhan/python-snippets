@@ -23,6 +23,8 @@ def count_files_in_directory(dirpath, white_list_formats):
                 count += 1
     return count
 
+
+
 def list_valid_subdirs(directory):
     """ returns a list of valid subdirs in a dir"""
     subdirs = []
@@ -31,6 +33,8 @@ def list_valid_subdirs(directory):
             subdirs.append(subdir)
 
     return subdirs
+
+
 
 def list_valid_filenames_in_directory(directory, white_list_formats,
                                       class_indices, follow_links):
@@ -54,6 +58,8 @@ def list_valid_filenames_in_directory(directory, white_list_formats,
                 filenames.append(os.path.relpath(absolute_path, basedir))
     return classes, filenames
 
+
+
 class CountFiles(object):
     def __init__(self, directory):
         self.directory  = directory
@@ -71,6 +77,8 @@ class CountFiles(object):
                                                              for subdir in self.valid_subdirs)))
 
         print 'Found {} files in {} subdirectories '.format(self.count, len(self.valid_subdirs))
+
+
 
 class BuildFileIndex():
     """" builds an index of files present in a directory """
@@ -102,6 +110,63 @@ class BuildFileIndex():
             i += len(classes)
         pool.close()
         pool.join()
+
+
+
+class ImageDataGenerator(object):
+    def __init__(self):
+        "ImageDataGenerator init"
+
+    def flow_from_directory(self, directory, batch_size):
+        return DirectoryIterator(directory, self, batch_size)
+
+
+
+class Iterator(object):
+    def __init__(self, n, batch_size):
+        self.n = n
+        self.batch_size = batch_size
+        self.batch_index = 0
+        self.total_batches_seen = 0
+        self.index_generator = self._flow_index()
+
+    def reset(self):
+        self.batch_index = 0
+
+    def _set_index_array(self):
+        self.index_array = range(self.n)
+
+
+    def _flow_index(self):
+        self.reset()
+        while 1:
+            if self.batch_index == 0:
+                self._set_index_array()
+            current_index = (self.batch_index * self.batch_size) % self.n
+            if self.n > current_index + self.batch_size:
+                self.batch_index += 1
+            else:
+                self.batch_index = 0
+            self.total_batches_seen += 1
+            yield self.index_array[current_index: current_index + self.batch_size]
+
+
+
+class DirectoryIterator(Iterator):
+    def __init__(self, directory, image_data_generator, batch_size):
+        self.directory = directory
+        self.image_data_generator = image_data_generator
+        white_list_formats = ['jpeg', 'jpg', 'png']
+        self.samples = 0
+        bfi = BuildFileIndex(self.directory)
+        bfi.build_file_index()
+        self.samples = bfi.samples
+        self.class_indices = bfi.class_indices
+        self.classes = bfi.classes
+        self.filenames = bfi.filenames
+        super(DirectoryIterator, self).__init__(self.samples, batch_size)
+
+
 
 if __name__ == '__main__':
     print count_files_in_directory('/home/ubuntu/dogscats',['jpg', 'jpeg', 'png'])
