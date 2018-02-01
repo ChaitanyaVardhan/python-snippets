@@ -150,6 +150,12 @@ class Iterator(object):
             self.total_batches_seen += 1
             yield self.index_array[current_index: current_index + self.batch_size]
 
+    def __iter__(self):
+        return self
+
+    def __next__(*args, **kwargs):
+        return self.next(*args, **kwargs)
+
 
 
 class DirectoryIterator(Iterator):
@@ -166,6 +172,8 @@ class DirectoryIterator(Iterator):
         self.filenames = bfi.filenames
         super(DirectoryIterator, self).__init__(self.samples, batch_size)
 
+    def next(self):
+        return next(self.index_generator)
 
 
 if __name__ == '__main__':
