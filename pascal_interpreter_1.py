@@ -1,6 +1,6 @@
 #code adapted from github: rspivak/lsbasi
 
-INTEGER, PLUS, EOF = 'INTEGER', 'PLUS', 'EOF'
+INTEGER, PLUS, MINUS, EOF, WHITESPACE = 'INTEGER', 'PLUS', 'MINUS', 'EOF', ' '
 
 class Token(object):
     def __init__(self, type, value):
@@ -57,32 +57,77 @@ class Interpreter(object):
             self.pos += 1
             return token
 
+        if current_char == '-':
+            token = Token(MINUS, current_char)
+            self.pos += 1
+            return token
+
+        if current_char == ' ':
+            token = Token(WHITESPACE, current_char)
+            self.pos += 1
+            return token
+
         self.error()
 
     def eat(self, token_type):
         if self.current_token.type == token_type:
+            self.int_tokens.append(self.current_token)
             self.current_token = self.get_next_token()
         else:
             self.error()
+
+    def eat_ints(self):
+        if self.current_token.type == INTEGER:
+            self.int_tokens.append(self.current_token)
+            self.current_token = self.get_next_token()
+            self.eat_ints()
+
+    def eat_oper(self):
+        if self.current_token.type == PLUS or MINUS:
+            self.current_token = self.get_next_token()
+        else:
+            self.error()        
+
+    def skip_whitespace(self):
+        if self.current_token.type == WHITESPACE:
+            self.current_token = self.get_next_token()
+            self.skip_whitespace()
 
     def expr(self):
         """ expr -> INTEGER PLUS INTEGER """
         # get the first token from the input
         self.current_token = self.get_next_token()
+        self.skip_whitespace()
 
         # check if first token is a single digit integer
-        left = self.current_token
+        self.int_tokens = []
         self.eat(INTEGER)
+        self.eat_ints()
+        self.left = self.int_tokens
+        left = ''
+        for token in self.left:
+            left += str(token.value)
+        self.skip_whitespace()
 
-        # next token should be '+"
-        op = self.current_token
-        self.eat(PLUS)
+        # next token should be '+" or "-"
+        self.op = self.current_token
+        self.eat_oper()
+        self.skip_whitespace()
 
         # next token after '+' should be a single digit integer
-        right = self.current_token
+        self.int_tokens = []
         self.eat(INTEGER)
+        self.eat_ints()
+        self.right = self.int_tokens
+        right = ''
+        for token in self.right:
+            right += str(token.value)
 
-        result = left.value + right.value
+        if self.op.type == PLUS:
+            result = int(left) + int(right)
+
+        if self.op.type == MINUS:
+            result = int(left) - int(right)
         return result
 
 
