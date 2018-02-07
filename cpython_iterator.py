@@ -45,14 +45,15 @@ class SequenceClass:
             raise IndexError
 
 class TestIterator():
-    def check_iterator(self, it, seq):
-        self.res = []
+    def check_iterator(self, it):
+        res = []
         while 1:
             try:
                 val = it.next()
             except StopIteration:
                 break
-            self.res.append(val)
+            res.append(val)
+        return res
 
     def check_for_loop(self, it):
         res = []
@@ -62,7 +63,8 @@ class TestIterator():
             
     #Test basic use of iter() function
     def test_iter_basic(self):
-        self.check_iterator(iter(range(10)), range(10))
+        res = self.check_iterator(iter(range(10)))
+        return res
 
     #test iter(x) and iter(iter(x)) are same
     def test_iter_idempotency(self):
@@ -103,6 +105,95 @@ class TestIterator():
         res = self.check_for_loop(IteratingSequenceClass(10))
         return res
 
+    #check explicit iter on a class with __iter__
+    def test_iter_class_iter(self):
+        res = self.check_iterator(iter(IteratingSequenceClass(10)))
+        return res
 
+    #check iter on a sequence class without iter
+    def test_seq_class_iter(self):
+        res = self.check_iterator(iter(SequenceClass(10)))
+        return res
 
+    #check for loop on a sequence class without __iter__
+    def test_seq_class_for(self):
+        res = self.check_for_loop(SequenceClass(10))
+        return res
 
+    def test_mutating_seq_class_exhausted_iter(self):
+        a = SequenceClass(5)
+        it1 = iter(a)
+        it2 = iter(a)
+        for x in it1:
+            next(it2)
+        a.n = 7
+        return(list(it1), list(it2), list(a))
+
+    def test_new_style_iter_class(self):
+        class IterClass(object):
+            def __iter__(self):
+                return self
+
+        return IterClass()
+
+    # test 2 argument iter with a callable instance
+    def test_iter_callable(self):
+        class C:
+            def __init__(self):
+                self.i = 0
+            def __call__(self):
+                i = self.i
+                self.i = i + 1
+                if i > 100:
+                    raise IndexError
+                return i
+        return(iter(C(), 20))
+
+    # test 2 argument iter() with a function
+    def test_iter_function(self):
+        def spam(state=[0]):
+            i = state[0]
+            state[0] = i + 1
+            return i
+        return(iter(spam, 20))
+
+    # test 2 argument iter() with a function that raises StopIteration
+    def test_iter_function_stop(self):
+        def spam(state=[0]):
+            i = state[0]
+            if i == 10:
+                raise StopIteration
+            state[0] = i + 1
+            return i
+        return (iter(spam, 20))
+
+    # test exception propagation through function iterator
+    def test_exception_function(self):
+        def spam(state=[0]):
+            i = state[0]
+            state[0] = i + 1
+            if i == 10:
+                raise RuntimeError
+            return i
+        res = []
+        try:
+            for x in iter(spam, 20):
+                res.append(x)
+        except RuntimeError:
+            return len(res)
+        else:
+            return "Should have raised RuntimeError"
+
+    # test exception propagation through sequence iterator
+    def test_exception_sequence(self):
+        class MySequenceClass(SequenceClass):
+            def __getitem__(self, i):
+                if i == 10:
+                    raise RuntimeError
+                return SequenceClass.__getitem__(self, i)
+        res = []
+        try:
+            for x in MySequenceClass(20):
+                res.append(x)
+        except RuntimeError:
+            return res
