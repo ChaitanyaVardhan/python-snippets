@@ -2,6 +2,8 @@
 
 import unittest
 
+import os
+
 TRIPLETS = [(0,0,0), (0,0,1), (0,0,2),
             (0,1,0), (0,1,1), (0,1,2),
             (0,2,0), (0,2,1), (0,2,2),
@@ -13,6 +15,8 @@ TRIPLETS = [(0,0,0), (0,0,1), (0,0,2),
             (2,0,0), (2,1,1), (2,1,2),
             (2,1,0), (2,1,1), (2,1,2),
             (2,2,0), (2,2,1), (2,2,2)]
+
+TESTFN = "testfile.txt"
 
 class BasicIterClass:
     def __init__(self, n):
@@ -197,3 +201,124 @@ class TestIterator():
                 res.append(x)
         except RuntimeError:
             return res
+
+    # Test a big range
+    def test_a_big_range(self):
+        return self.check_for_loop(iter(range(10000)))
+
+    # Test an empty list
+    def test_iter_empty(self):
+        return self.check_for_loop(iter([]))
+
+    # Test an xrange
+    def test_iter_xrange(self):
+        return self.check_for_loop(iter(xrange(10)))
+
+    #Test a string
+    def test_iter_string(self):
+        return self.check_for_loop(iter("abcde"))
+
+    #Test a dictionary
+    def test_iter_dict(self):
+        dict = {}
+        for i in range(10):
+            dict[i] = None
+        self.check_for_loop(dict)
+
+    # Test a file
+    def test_iter_file(self):
+        f = open(TESTFN, "w")
+        try:
+            for i in range(5):
+                f.write("%d\n" % i)
+        finally:
+            f.close()
+        f = open(TESTFN, "r")
+        try:
+            res1 = self.check_for_loop(f)
+            yield res1
+        finally:
+            f.close()
+            try:
+                os.unlink(TESTFN)
+            except OSError:
+                pass
+
+    # Test list()'s use of iterator
+    def test_builtin_list(self):
+        f = open(TESTFN, "w")
+        try:
+            for i in range(11):
+                f.write("%d\n" % i)
+        finally:
+            f.close()
+        f = open(TESTFN, "r")
+        try:
+            res1 = self.check_for_loop(list(f))
+            yield res1
+            f.seek(2,0)
+            res2 = self.check_for_loop(list(f))
+            yield res2
+        finally:
+            f.close()
+            try:
+                os.unlink(TESTFN)
+            except OSError:
+                pass
+
+    # Test tuple()'s use of iterator
+    def test_builtin_tuple(self):
+        f = open(TESTFN, "w")
+        try:
+            for i in range(12):
+                f.write("%d\n" % i)
+        finally:
+            f.close()
+        f = open(TESTFN, "r")
+        try:
+            res1 = self.check_for_loop(tuple(f))
+            yield res1
+            f.seek(-2, 1)
+            res2 = self.check_for_loop(tuple(f))
+            yield res2
+        finally:
+            f.close()
+            try:
+                os.unlink(TESTFN)
+            except OSError:
+                pass
+
+    # Test filter()'s use of iterators
+    def test_builtin_filter(self):
+        class Boolean:
+            def __init__(self, truth):
+                self.truth = truth
+            def __nonzero__(self):
+                return self.truth
+        bTrue = Boolean(1)
+        bFalse = Boolean(0)
+
+        class Seq:
+            def __init__(self, *args):
+                self.vals = args
+            def __iter__(self):
+                class SeqIter:
+                    def __init__(self, vals):
+                        self.vals = vals
+                        self.i = 0
+                    def __iter__(self):
+                        return self
+                    def next(self):
+                        i = self.i
+                        self.i = i + 1
+                        if i < len(self.vals):
+                            return self.vals[i]
+                        else:
+                            raise StopIteration
+                return SeqIter(self.vals)
+
+        seq = Seq(*([bTrue, bFalse] * 25))
+        res1 = filter(lambda x: not x, seq)
+        yield res1
+        res2 = filter(lambda x: not x, iter(seq))
+        yield res2
