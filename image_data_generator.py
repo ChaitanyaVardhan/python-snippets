@@ -35,7 +35,46 @@ def _count_valid_files_in_directory(directory, white_list_formats, follow_links)
 
 
 
-class DirectoryIterator:
+class Iterator(object):
+    """Base class for iterators
+    Arguments: 
+    n: Integer, total number of samples in a dataset to loop over
+    batch_size: Integer, size of a batch
+    """
+
+    def __init__(self, n, batch_size):
+        self.n = n
+        self.batch_size = batch_size
+        self.index_generator = self._flow_index()
+
+    def _flow_index(self):
+        self.reset()
+        while 1:
+            if self.batch_index == 0:
+                self._set_index_array()
+
+            current_index = (self.batch_index * self.batch_size) % self.n
+            if self.n > current_index + self.batch_size:
+                self.batch_index += 1
+            else:
+                self.batch_index = 0
+            self.total_batches_seen += 1
+            yield self.index_array[current_index:
+                                   current_index + self.batch_size]
+
+    def reset(self):
+        self.batch_index = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        self.next()
+
+    def _get_batches_of_transformed_samples(self, index_array):
+        raise NotImplementedError
+
+class DirectoryIterator(Iterator):
     def __init__(self,
                  directory,
                  image_data_generator,
@@ -67,6 +106,27 @@ class DirectoryIterator:
                                      for subdir in classes)))
         print('Found {} images belonging to {} classes'.format(self.samples,
                                                                self.num_classes))
+
+        results = []
+
+        self.filenames = []
+        self.classes = [2%2 for i in range(self.samples)]
+        i = 0
+        for dirpath in (os.path.join(directory, subdir) for subdir in classes):
+            results.append(pool.apply_async(_list_valid_filenames_in_directory,
+                                            (dirpath, white_list_formats,
+                                             self.class_indices, follow_links)))
+
+        for res in results:
+            classes, filenames = res.get()
+            self.classes[i:i + len(classes)] = classes
+            self.filenames += filenames
+            i += len(classes)
+        pool.close()
+        pool.join()
+        super(DirectoryIterator, self).__init__(self.samples, batch_size)
+        
+            
 
             
 
