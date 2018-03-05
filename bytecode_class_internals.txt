@@ -1,0 +1,27 @@
+  1           0 LOAD_CONST               0 ('Counter')
+              3 LOAD_CONST               5 (())
+              6 LOAD_CONST               1 (<code object Counter at 0x7f381e09c930, file "class_internals.py", line 1>)
+              9 MAKE_FUNCTION            0
+             12 CALL_FUNCTION            0
+             15 BUILD_CLASS         
+             16 STORE_NAME               0 (Counter)
+
+ 16          19 LOAD_NAME                0 (Counter)
+             22 LOAD_CONST               2 (2)
+             25 LOAD_CONST               3 (20)
+             28 CALL_FUNCTION            2
+             31 STORE_NAME               1 (c1)
+
+ 17          34 SETUP_LOOP              19 (to 56)
+             37 LOAD_NAME                1 (c1)
+             40 GET_ITER            
+        >>   41 FOR_ITER                11 (to 55)
+             44 STORE_NAME               2 (c)
+
+ 18          47 LOAD_NAME                2 (c)
+             50 PRINT_ITEM          
+             51 PRINT_NEWLINE       
+             52 JUMP_ABSOLUTE           41
+        >>   55 POP_BLOCK           
+        >>   56 LOAD_CONST               4 (None)
+             59 RETURN_VALUE        
