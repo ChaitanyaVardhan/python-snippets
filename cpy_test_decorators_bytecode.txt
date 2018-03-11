@@ -1,0 +1,65 @@
+  1           0 LOAD_CONST               0 ('code in this script adapted from cpython/Lib/test/test_decorators.py')
+              3 STORE_NAME               0 (__doc__)
+
+  3           6 LOAD_CONST               1 (<code object funcattrs at 0x7fd2870bb830, file "cpy_test_decorators.py", line 3>)
+              9 MAKE_FUNCTION            0
+             12 STORE_NAME               1 (funcattrs)
+
+ 10          15 LOAD_CONST               2 (<code object foo at 0x7fd2870bb8b0, file "cpy_test_decorators.py", line 10>)
+             18 MAKE_FUNCTION            0
+             21 STORE_NAME               2 (foo)
+
+ 14          24 LOAD_NAME                3 (__name__)
+             27 LOAD_CONST               3 ('__main__')
+             30 COMPARE_OP               2 (==)
+             33 POP_JUMP_IF_FALSE      134
+
+ 15          36 BUILD_MAP                1
+             39 LOAD_CONST               4 ('Chaitanya')
+             42 LOAD_CONST               5 ('author_name')
+             45 STORE_MAP           
+             46 STORE_NAME               4 (kwds)
+
+ 16          49 LOAD_NAME                1 (funcattrs)
+             52 LOAD_NAME                4 (kwds)
+             55 CALL_FUNCTION_KW         0
+             58 STORE_NAME               5 (f1)
+
+ 17          61 LOAD_NAME                5 (f1)
+             64 LOAD_NAME                2 (foo)
+             67 CALL_FUNCTION            1
+             70 STORE_NAME               6 (f2)
+
+ 18          73 LOAD_NAME                6 (f2)
+             76 PRINT_ITEM          
+             77 PRINT_NEWLINE       
+
+ 19          78 LOAD_NAME                2 (foo)
+             81 LOAD_ATTR                7 (__dict__)
+             84 LOAD_CONST               5 ('author_name')
+             87 BINARY_SUBSCR       
+             88 PRINT_ITEM          
+             89 PRINT_NEWLINE       
+
+ 20          90 LOAD_NAME                6 (f2)
+             93 CALL_FUNCTION            0
+             96 PRINT_ITEM          
+             97 PRINT_NEWLINE       
+
+ 22          98 LOAD_NAME                1 (funcattrs)
+            101 LOAD_NAME                4 (kwds)
+            104 CALL_FUNCTION_KW         0
+            107 LOAD_CONST               6 (<code object bar at 0x7fd2870bb930, file "cpy_test_decorators.py", line 22>)
+            110 MAKE_FUNCTION            0
+            113 CALL_FUNCTION            1
+            116 STORE_NAME               8 (bar)
+
+ 24         119 LOAD_NAME                8 (bar)
+            122 LOAD_ATTR                7 (__dict__)
+            125 LOAD_CONST               5 ('author_name')
+            128 BINARY_SUBSCR       
+            129 PRINT_ITEM          
+            130 PRINT_NEWLINE       
+            131 JUMP_FORWARD             0 (to 134)
+        >>  134 LOAD_CONST               7 (None)
+            137 RETURN_VALUE        
