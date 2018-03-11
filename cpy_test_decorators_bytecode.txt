@@ -1,65 +1,78 @@
   1           0 LOAD_CONST               0 ('code in this script adapted from cpython/Lib/test/test_decorators.py')
               3 STORE_NAME               0 (__doc__)
 
-  3           6 LOAD_CONST               1 (<code object funcattrs at 0x7fd2870bb830, file "cpy_test_decorators.py", line 3>)
+  3           6 LOAD_CONST               1 (<code object funcattrs at 0x7f53c1f82830, file "cpy_test_decorators.py", line 3>)
               9 MAKE_FUNCTION            0
              12 STORE_NAME               1 (funcattrs)
 
- 10          15 LOAD_CONST               2 (<code object foo at 0x7fd2870bb8b0, file "cpy_test_decorators.py", line 10>)
-             18 MAKE_FUNCTION            0
-             21 STORE_NAME               2 (foo)
+ 10          15 LOAD_CONST               2 ('MiscDecorators')
+             18 LOAD_CONST              15 (())
+             21 LOAD_CONST               3 (<code object MiscDecorators at 0x7f53c1f829b0, file "cpy_test_decorators.py", line 10>)
+             24 MAKE_FUNCTION            0
+             27 CALL_FUNCTION            0
+             30 BUILD_CLASS         
+             31 STORE_NAME               2 (MiscDecorators)
 
- 14          24 LOAD_NAME                3 (__name__)
-             27 LOAD_CONST               3 ('__main__')
-             30 COMPARE_OP               2 (==)
-             33 POP_JUMP_IF_FALSE      134
+ 18          34 LOAD_CONST               4 (<code object memoize at 0x7f53c1f82ab0, file "cpy_test_decorators.py", line 18>)
+             37 MAKE_FUNCTION            0
+             40 STORE_NAME               3 (memoize)
 
- 15          36 BUILD_MAP                1
-             39 LOAD_CONST               4 ('Chaitanya')
-             42 LOAD_CONST               5 ('author_name')
-             45 STORE_MAP           
-             46 STORE_NAME               4 (kwds)
+ 33          43 LOAD_CONST               5 (<code object countcalls at 0x7f53c1f82cb0, file "cpy_test_decorators.py", line 33>)
+             46 MAKE_FUNCTION            0
+             49 STORE_NAME               4 (countcalls)
 
- 16          49 LOAD_NAME                1 (funcattrs)
-             52 LOAD_NAME                4 (kwds)
-             55 CALL_FUNCTION_KW         0
-             58 STORE_NAME               5 (f1)
+ 45          52 LOAD_CONST               6 (<code object noteargs at 0x7f53c1f82db0, file "cpy_test_decorators.py", line 45>)
+             55 MAKE_FUNCTION            0
+             58 STORE_NAME               5 (noteargs)
 
- 17          61 LOAD_NAME                5 (f1)
-             64 LOAD_NAME                2 (foo)
-             67 CALL_FUNCTION            1
-             70 STORE_NAME               6 (f2)
+ 51          61 LOAD_CONST               7 (<code object foo at 0x7f53c1f82e30, file "cpy_test_decorators.py", line 51>)
+             64 MAKE_FUNCTION            0
+             67 STORE_NAME               6 (foo)
 
- 18          73 LOAD_NAME                6 (f2)
-             76 PRINT_ITEM          
-             77 PRINT_NEWLINE       
+ 54          70 LOAD_CONST               8 (<code object test_funcattrs at 0x7f53c1f82f30, file "cpy_test_decorators.py", line 54>)
+             73 MAKE_FUNCTION            0
+             76 STORE_NAME               7 (test_funcattrs)
 
- 19          78 LOAD_NAME                2 (foo)
-             81 LOAD_ATTR                7 (__dict__)
-             84 LOAD_CONST               5 ('author_name')
-             87 BINARY_SUBSCR       
-             88 PRINT_ITEM          
-             89 PRINT_NEWLINE       
+ 66          79 LOAD_CONST               9 (<code object test_MiscDecorators at 0x7f53c1f310b0, file "cpy_test_decorators.py", line 66>)
+             82 MAKE_FUNCTION            0
+             85 STORE_NAME               8 (test_MiscDecorators)
 
- 20          90 LOAD_NAME                6 (f2)
-             93 CALL_FUNCTION            0
-             96 PRINT_ITEM          
-             97 PRINT_NEWLINE       
+ 74          88 LOAD_CONST              10 (<code object test_argforms at 0x7f53c1f312b0, file "cpy_test_decorators.py", line 74>)
+             91 MAKE_FUNCTION            0
+             94 STORE_NAME               9 (test_argforms)
 
- 22          98 LOAD_NAME                1 (funcattrs)
-            101 LOAD_NAME                4 (kwds)
-            104 CALL_FUNCTION_KW         0
-            107 LOAD_CONST               6 (<code object bar at 0x7fd2870bb930, file "cpy_test_decorators.py", line 22>)
-            110 MAKE_FUNCTION            0
-            113 CALL_FUNCTION            1
-            116 STORE_NAME               8 (bar)
+ 91          97 LOAD_CONST              11 (<code object test_countcalls at 0x7f53c1f313b0, file "cpy_test_decorators.py", line 91>)
+            100 MAKE_FUNCTION            0
+            103 STORE_NAME              10 (test_countcalls)
 
- 24         119 LOAD_NAME                8 (bar)
-            122 LOAD_ATTR                7 (__dict__)
-            125 LOAD_CONST               5 ('author_name')
-            128 BINARY_SUBSCR       
-            129 PRINT_ITEM          
-            130 PRINT_NEWLINE       
-            131 JUMP_FORWARD             0 (to 134)
-        >>  134 LOAD_CONST               7 (None)
-            137 RETURN_VALUE        
+109         106 LOAD_CONST              12 (<code object test_memoize at 0x7f53c1f31530, file "cpy_test_decorators.py", line 109>)
+            109 MAKE_FUNCTION            0
+            112 STORE_NAME              11 (test_memoize)
+
+133         115 LOAD_NAME               12 (__name__)
+            118 LOAD_CONST              13 ('__main__')
+            121 COMPARE_OP               2 (==)
+            124 POP_JUMP_IF_FALSE      165
+
+134         127 LOAD_NAME                7 (test_funcattrs)
+            130 CALL_FUNCTION            0
+            133 POP_TOP             
+
+136         134 LOAD_NAME                8 (test_MiscDecorators)
+            137 CALL_FUNCTION            0
+            140 POP_TOP             
+
+138         141 LOAD_NAME                9 (test_argforms)
+            144 CALL_FUNCTION            0
+            147 POP_TOP             
+
+140         148 LOAD_NAME               10 (test_countcalls)
+            151 CALL_FUNCTION            0
+            154 POP_TOP             
+
+142         155 LOAD_NAME               11 (test_memoize)
+            158 CALL_FUNCTION            0
+            161 POP_TOP             
+            162 JUMP_FORWARD             0 (to 165)
+        >>  165 LOAD_CONST              14 (None)
+            168 RETURN_VALUE        
