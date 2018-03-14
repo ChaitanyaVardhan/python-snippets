@@ -129,6 +129,16 @@ def test_memoize():
     print triple(2)
     print counts
 
+def test_double():
+    print 'Test double'
+    class C(object):
+        @funcattrs(abc=1, xyz='haha')
+        @funcattrs(foobar='oh yeah')
+        def foo(self): return 91
+    print C().foo()
+    print C().foo.abc
+    print C().foo.xyz
+    print C().foo.foobar
 
 if __name__ == '__main__':
     test_funcattrs()
@@ -140,6 +150,8 @@ if __name__ == '__main__':
     test_countcalls()
 
     test_memoize()
+
+    test_double()
 
 
     
